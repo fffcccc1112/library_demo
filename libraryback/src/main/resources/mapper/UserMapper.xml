@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.library.libraryback.mapper.UserXmlMapper">
+    <insert id="addUser">
+        insert into user (userid,username, password, phone) values (#{userid},#{username},#{password},#{phone})
+    </insert>
+    <select id="getUserById" resultType="user" >
+        select * from user where userid=#{id};
+    </select>
+    <select id="getUserByUsername" resultType="user">
+        select * from user where username=#{username}
+    </select>
+    <select id="getAllUser" resultType="com.library.libraryback.entity.User">
+        select * from user;
+    </select>
+    <delete id="deleteUserById" parameterType="int">
+        DELETE FROM user WHERE userid = #{id}
+    </delete>
+    <update id="upDate" parameterType="user">
+        UPDATE user
+        <set>
+            username = #{username},
+            password = #{password},
+            phone = #{phone}
+        </set>
+        WHERE userid = #{id}
+    </update>
+</mapper>

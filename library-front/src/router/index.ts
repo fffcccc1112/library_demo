@@ -1,23 +1,46 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-
+//创建一个路由器，并暴露出去
+//引入createrrouter
+import { createRouter,createWebHistory } from "vue-router";
+import Home from "@/page/Home.vue";
+import Login from "@/component/Login.vue";
+import Register from "@/page/Register.vue";
+//创建路由器
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    }
-  ]
+    history:createWebHistory(),//路由器的工作模式
+    routes:[
+        // {
+        //     path:'/news',
+        //     component:News,
+        //     children:[
+        //         {   
+        //             name:'xiang',
+        //             path:'details/:title/:value',
+        //             component:Details,
+        //             props:true
+        //         }
+        //     ]
+        // },
+        {
+            path:'/register',
+            component:Register,
+            name:'Register'
+        },
+        {
+            path:'/home',
+            name: 'Home',
+            component:Home
+        },
+        {
+            path:"/login",
+            name:"Login",
+            component:Login
+        },
+        {
+            //重定向
+            path:'/',
+            redirect:'/login'
+        }
+    ]
 })
-
+//暴露出去
 export default router
