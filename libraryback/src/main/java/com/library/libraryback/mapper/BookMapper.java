@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface BookMapper {
     List<Book> selectAllBook();
-    int insertBook(Book book);
+    Book insertBook(Book book);
     int deleteBook(int id);
+    Book getBookById(int id);
+    Book updateBook(Book book);
 }

@@ -5,11 +5,22 @@
     <select id="selectAllBook" resultType="book">
         select * from book;
     </select>
+    <select id="getBookById" resultType="book">
+        select * from book where bookid=#{id};
+    </select>
     <insert id="insertBook">
     insert into book (bookid, title, author, cover) values (#{bookid},#{title},#{author},#{cover})
     </insert>
     <delete id="deleteBook">
         DELETE FROM book WHERE bookid = #{id}
     </delete>
+    <update id="updateBook">
+       update book
+        set
+        title=#{title},author=#{author},
+        cover=#{cover},outtime=#{outtime},
+        exist=#{exist},borrow=#{borrow}
+       where bookid=#{bookid}
+    </update>
 
 </mapper>

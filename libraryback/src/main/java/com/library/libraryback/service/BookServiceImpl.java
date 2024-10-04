@@ -8,11 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BookServiceImpl implements BookService {
     @Resource
     private BookMapper bookMapper;
-    public int insertBook(Book book){
+    public Book insertBook(Book book){
      return bookMapper.insertBook(book);
     }
 
@@ -33,5 +35,20 @@ public class BookServiceImpl implements BookService {
             // 可以返回一个错误状态码，例如INTERNAL_SERVER_ERROR
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public List<Book> getBooks() {
+        return bookMapper.selectAllBook();
+    }
+
+    @Override
+    public Book getBookById(int id) {
+        return bookMapper.getBookById(id);
+    }
+
+    @Override
+    public Book updateBook(Book book) {
+        return bookMapper.updateBook(book);
     }
 }

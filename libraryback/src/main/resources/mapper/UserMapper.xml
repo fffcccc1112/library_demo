@@ -14,6 +14,9 @@
     <select id="getAllUser" resultType="com.library.libraryback.entity.User">
         select * from user;
     </select>
+    <select id="getUserByPhone" resultType="user">
+        select * from user where phone=#{phone}
+    </select>
     <delete id="deleteUserById" parameterType="int">
         DELETE FROM user WHERE userid = #{id}
     </delete>

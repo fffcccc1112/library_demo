@@ -1,92 +1,83 @@
 package com.library.libraryback.controller;
 
+import com.library.libraryback.entity.Result;
 import com.library.libraryback.entity.User;
 import com.library.libraryback.mapper.UserXmlMapper;
 import com.library.libraryback.service.UserService;
+import com.library.libraryback.util.Md5Util;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
+@RequestMapping("/user")
 @RestController
+@Validated
 public class UserController {
     @Autowired
     private UserXmlMapper userXmlMapper;
     @Autowired
     private UserService userService;
+
     @GetMapping("/all")
     public List<User> getAllUser() {
+
         return userXmlMapper.getAllUser();
     }
         @GetMapping("/user/{id}")
     public User getUserById(@PathVariable("id") int id){
-        User user1 =userXmlMapper.getUserById(id);
-        return user1;
+            return userService.deleteUserById(id);
     }
     //根据用户名查询
     @GetMapping("/find/{username}")
     public User getUserByUsername(@PathVariable("username") String username){
-        User user =userXmlMapper.getUserByUsername(username);
-        return user;
+        return userService.getUserByUsername(username);
     }
+    //根据phone查找用户
+    @GetMapping("/phone/{phone}")
+    public User getUserByPhone(@PathVariable("phone") String phone){
+        return userService.getUserByPhone(phone);
+    }
+    //增加用户
     @PostMapping("/add")
-    public ResponseEntity<String> addUser(@RequestBody User user) {
-        try {
-            userXmlMapper.addUser(user);
-            // 假设userXmlMapper.addUser 返回一个插入的行数
-            if (userXmlMapper.addUser(user) == 1) {
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body("User added successfully: " + user.getUsername());
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Failed to add user");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error occurred while adding user: " + e.getMessage());
+    public Result addUser(@RequestBody User user) {
+        if(userService.getUserByPhone(user.getPhone())!=null){
+            return Result.error("电话已被注册");
         }
+        else if (userService.getUserByUsername(user.getUsername())!=null) {
+            return Result.error("用户名不能重复!");
+        }
+       else {
+                user.setPassword(Md5Util.inputPassToFormPass(user.getPassword()));
+                userService.addUser(user);
+                return Result.success(user);
+            }
     }
+    //根据id删除用户
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") int id) {
-        try {
-            int affectedRows = userXmlMapper.deleteUserById(id);
-            if (affectedRows > 0) {
-                return ResponseEntity.ok("User deleted successfully: " + id);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while deleting user: " + id);
-        }
-    }
-//    update
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable("id") int id, @RequestBody User user) {
-        user.setUserid(id); // 设置用户ID
-       try {
-           int result = userService.updateUser(user);
-           if (result > 0) {
-               return ResponseEntity.ok("User updated successfully.");
-           } else {
-               return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-           }
-       }catch (Exception e) {
-           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while updating user: " + id);
-       }
+    public Result<User> deleteUser(@PathVariable("id") int id) {
+        User user = userService.deleteUserById(id);
+        return Result.success(user);
     }
     //登录接口
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
-        User user1 =userXmlMapper.getUserByUsername(user.getUsername());
-        if (user1 != null && user1.getPassword().equals(user.getPassword())) {
-            return ResponseEntity.ok("User logged in successfully: " + user.getUsername());
+    public  Result login(@Pattern(regexp = "^\\S{2,16}$") String username,@Pattern(regexp = "^\\S{2,16}$") String password){
+        //查找用户名
+        if(userService.getUserByUsername(username)!=null){
+            User  user1=userService.getUserByUsername(username);
+            if(user1.getPassword().equals(Md5Util.inputPassToFormPass(password))) {
+                return Result.success(user1);
+            }
+            else {
+                return Result.error("密码错误");
+            }
         }
         else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
+            return Result.error("用户不存在!");
         }
     }
+    //可能实现修改密码的功能
+
 }

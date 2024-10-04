@@ -9,9 +9,11 @@ import java.util.List;
 @Repository
 public interface UserXmlMapper {
     List<User> getAllUser();
-    int addUser(User user);
+    User addUser(User user);
      User getUserById(int id);
      User getUserByUsername(String username);
-    int deleteUserById(int id);
+    User deleteUserById(int id);
     int upDate(User user);
+    User getUserByPhone(String phone);
+
 }
