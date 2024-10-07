@@ -1,9 +1,10 @@
 //创建一个路由器，并暴露出去
 //引入createrrouter
 import { createRouter,createWebHistory } from "vue-router";
-import Home from "@/page/Home.vue";
+import BookList from "@/page/BookList.vue";
 import Login from "@/component/Login.vue";
 import Register from "@/page/Register.vue";
+import AddBooks from "@/page/AddBooks.vue";
 //创建路由器
 const router = createRouter({
     history:createWebHistory(),//路由器的工作模式
@@ -26,9 +27,16 @@ const router = createRouter({
             name:'Register'
         },
         {
-            path:'/home',
-            name: 'Home',
-            component:Home
+            path:'/book',
+            name: 'book',
+            component:BookList,
+            children:[
+                {
+                    path:"/update",
+                    name:"update",
+                    component:AddBooks
+                }
+            ]
         },
         {
             path:"/login",

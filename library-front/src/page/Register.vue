@@ -1,13 +1,22 @@
 <template>
-  <div class="register">
-    <h2>请注册你的账号</h2>
-   <form action="">
-    <span>账号:</span><input type="text"><br><br>
-    <span>密码:</span><input type="password"><br><br>
-    <span>手机:</span><input type="text"><br><br>
-    <button>注册</button> 
-    <button @click="back">已有账号?点击返回</button>
-   </form>
+  <div class="login-container">
+    <h2>注册</h2>
+    <form @submit.prevent="">
+      <div>
+        <label for="username">账号:</label>
+        <input type="text" id="username"/>
+      </div>
+      <div>
+        <label for="password">密码:</label>
+        <input type="password" id="password"/>
+      </div>
+      <div>
+        <label for="phone">手机号:</label>
+        <input type="text" id="phone"/>
+      </div>
+      <button type="submit">注册</button>
+      <button @click="back">返回</button>
+    </form>
   </div>
 </template>
 
@@ -20,9 +29,46 @@ function back(){
 </script>
 
 <style scoped>
-.register {
-    text-align: center;
-    margin-top: 50px;
+.login-container {
+  max-width: 300px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
+.login-container div {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+p {
+  color: red;
+}
 </style>

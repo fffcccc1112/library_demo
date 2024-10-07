@@ -1,16 +1,19 @@
 package com.library.libraryback.controller;
 
+import com.library.libraryback.entity.LogUser;
 import com.library.libraryback.entity.Result;
 import com.library.libraryback.entity.User;
 import com.library.libraryback.mapper.UserXmlMapper;
 import com.library.libraryback.service.UserService;
+import com.library.libraryback.util.JwtUtil;
 import com.library.libraryback.util.Md5Util;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/user")
 @RestController
@@ -31,10 +34,13 @@ public class UserController {
             return userService.deleteUserById(id);
     }
     //根据用户名查询
-    @GetMapping("/find/{username}")
-    public User getUserByUsername(@PathVariable("username") String username){
-        return userService.getUserByUsername(username);
+    @GetMapping("/userinfo")
+    public Result getUserInfo(@RequestHeader(name="Authorization") String token) {
+
+        Map<String, Object> map = JwtUtil.parseToken(token);
+        return Result.success(map);
     }
+
     //根据phone查找用户
     @GetMapping("/phone/{phone}")
     public User getUserByPhone(@PathVariable("phone") String phone){
@@ -46,7 +52,7 @@ public class UserController {
         if(userService.getUserByPhone(user.getPhone())!=null){
             return Result.error("电话已被注册");
         }
-        else if (userService.getUserByUsername(user.getUsername())!=null) {
+         else if (userService.getUserByUsername(user.getUsername())!=null) {
             return Result.error("用户名不能重复!");
         }
        else {
@@ -63,12 +69,16 @@ public class UserController {
     }
     //登录接口
     @PostMapping("/login")
-    public  Result login(@Pattern(regexp = "^\\S{2,16}$") String username,@Pattern(regexp = "^\\S{2,16}$") String password){
+    public Result login(LogUser logUser){
         //查找用户名
-        if(userService.getUserByUsername(username)!=null){
-            User  user1=userService.getUserByUsername(username);
-            if(user1.getPassword().equals(Md5Util.inputPassToFormPass(password))) {
-                return Result.success(user1);
+        if(userService.getUserByUsername(logUser.getUsername())!=null){
+            User  user1=userService.getUserByUsername(logUser.getUsername());
+            if(user1.getPassword().equals(Md5Util.inputPassToFormPass(logUser.getPassword()))) {
+                Map<String,Object> claims=new HashMap<>();
+                claims.put("username",user1.getUsername());
+                claims.put("id",user1.getUserid());
+                String token = JwtUtil.getToken(claims);
+                return Result.success(token);
             }
             else {
                 return Result.error("密码错误");
