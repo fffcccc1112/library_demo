@@ -1,18 +1,18 @@
 <template>
   <div class="login-container">
     <h2>注册</h2>
-    <form @submit.prevent="">
+    <form @submit.prevent="handelregister">
       <div>
         <label for="username">账号:</label>
-        <input type="text" id="username"/>
+        <input type="text" id="username"  v-model="username" required/>
       </div>
       <div>
         <label for="password">密码:</label>
-        <input type="password" id="password"/>
+        <input type="password" id="password" v-model="password" required/>
       </div>
       <div>
         <label for="phone">手机号:</label>
-        <input type="text" id="phone"/>
+        <input type="text" id="phone" v-model="phone" required/>
       </div>
       <button type="submit">注册</button>
       <button @click="back">返回</button>
@@ -21,8 +21,30 @@
 </template>
 
 <script setup lang="ts">
+import axios from 'axios';
+import {  ref } from 'vue';
 import { useRouter } from 'vue-router'; // 导入useRouter钩子
+const username = ref('')
+const password = ref('')
+const phone = ref('')
 const router = useRouter()
+const handelregister = async (event:any)=>{
+      // 阻止表单的默认提交行为
+      event.preventDefault();
+      const form = {
+      username: username.value,
+      password: password.value,
+      phone: phone.value
+    };
+
+      try{ 
+        const respone =await axios.post('/api/user/register',form)
+        console.log(respone.data)
+
+      }catch(error){
+          alert("注册失败!")
+      }
+}
 function back(){
     router.push('/login')
 }

@@ -4,6 +4,7 @@ package com.library.libraryback.entity;
 import java.time.LocalDateTime;
 
 public class Book {
+//    @TableId(type = IdType.AUTO)
     private int bookid;
     private String title;
     private String author;

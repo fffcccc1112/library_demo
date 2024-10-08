@@ -7,9 +7,12 @@ import com.library.libraryback.mapper.UserXmlMapper;
 import com.library.libraryback.service.UserService;
 import com.library.libraryback.util.JwtUtil;
 import com.library.libraryback.util.Md5Util;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerMapping;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +26,9 @@ public class UserController {
     private UserXmlMapper userXmlMapper;
     @Autowired
     private UserService userService;
+    @Qualifier("resourceHandlerMapping")
+    @Autowired
+    private HandlerMapping resourceHandlerMapping;
 
     @GetMapping("/all")
     public List<User> getAllUser() {
@@ -44,23 +50,35 @@ public class UserController {
     //根据phone查找用户
     @GetMapping("/phone/{phone}")
     public User getUserByPhone(@PathVariable("phone") String phone){
+
         return userService.getUserByPhone(phone);
     }
     //增加用户
     @PostMapping("/add")
-    public Result addUser(@RequestBody User user) {
-        if(userService.getUserByPhone(user.getPhone())!=null){
-            return Result.error("电话已被注册");
+    public Result Register(String username, String password, String phone) {
+          if(userService.getUserByUsername(username)==null && userService.getUserByPhone(phone)==null){
+              String password1 = Md5Util.inputPassToFormPass(password);
+              userService.addUser(username, password1, phone);
+              System.out.println(username+password+phone);
+              return Result.success("注册成功");
+          }
+          else {
+              System.out.println(username+password+phone);
+              return Result.error("用户名或电话重复");
+
+          }
+}
+@PostMapping("/register")
+public Result register(@RequestBody User user) {
+        if(userService.getUserByUsername(user.getUsername())==null && userService.getUserByPhone(user.getPhone())==null){
+           user.setPassword(Md5Util.inputPassToFormPass(user.getPassword()));
+           User user1 = userService.addUser(user.getUsername(), user.getPassword(), user.getPhone());
+           return Result.success("注册成功");
         }
-         else if (userService.getUserByUsername(user.getUsername())!=null) {
-            return Result.error("用户名不能重复!");
+        else {
+            return Result.error("用户名或电话重复");
         }
-       else {
-                user.setPassword(Md5Util.inputPassToFormPass(user.getPassword()));
-                userService.addUser(user);
-                return Result.success(user);
-            }
-    }
+}
     //根据id删除用户
     @DeleteMapping("/delete/{id}")
     public Result<User> deleteUser(@PathVariable("id") int id) {

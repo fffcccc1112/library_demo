@@ -1,9 +1,13 @@
 package com.library.libraryback.entity;
 
 public class User {
+//    @TableId(type = IdType.AUTO)
     private int userid;
+
     private String username;
+
     private String password;
+
     private String phone;
 
     public String getPassword() {

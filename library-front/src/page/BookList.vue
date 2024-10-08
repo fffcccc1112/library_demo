@@ -52,6 +52,7 @@ axios.get('/api/book/all', {
   // 打印错误信息
   console.error('Error:', error);
   alert("登录已过期，请重新登陆")
+  router.push('/login')
 });
 </script>
 <template>
