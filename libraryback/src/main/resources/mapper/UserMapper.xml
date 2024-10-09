@@ -9,13 +9,13 @@
         select * from user where userid=#{id};
     </select>
     <select id="getUserByUsername" resultType="user">
-        select * from user where username=#{username}
+        select * from user where username=#{username} limit 1
     </select>
     <select id="getAllUser" resultType="com.library.libraryback.entity.User">
         select * from user;
     </select>
     <select id="getUserByPhone" resultType="user">
-        select * from user where phone=#{phone}
+        select * from user where phone=#{phone} limit 1
     </select>
     <delete id="deleteUserById" parameterType="int">
         DELETE FROM user WHERE userid = #{id}

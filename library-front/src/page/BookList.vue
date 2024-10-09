@@ -46,6 +46,7 @@ axios.get('/api/book/all', {
 .then(response => {
   // 更新表格数据
   tableData.value = response.data;
+  console.log(response.data)
 
 })
 .catch(error => {
@@ -54,8 +55,25 @@ axios.get('/api/book/all', {
   alert("登录已过期，请重新登陆")
   router.push('/login')
 });
-</script>
+const deleteBook = (bookId: number) => {
+  axios.delete(`/api/book/delete/${bookId}`, {
+    headers: {
+      'Authorization': userstore.token
+    }
+  })
+  .then(() => {
+    // 删除成功后，从tableData中移除该书籍
+    tableData.value = tableData.value.filter(book => book.bookid !== bookId);
+  })
+  .catch(error => {
+    // 打印错误信息
+    // console.error('Error:', error);
+    alert("删除失败，请重试");
+  });
+};
+</script> 
 <template>
+  <div class="head"><span>你好！{{userstore.user }}</span></div>
   <el-table :data="tableData" style="width: 100%" class="list">
     <el-table-column fixed prop="bookid" label="图书编号" width="150" />
     <el-table-column prop="bookname" label="书名" width="120" />
@@ -63,11 +81,11 @@ axios.get('/api/book/all', {
     <el-table-column prop="cover" label="类型" width="120" />
     <el-table-column prop="exist" label="是否存在" width="120" />
     <el-table-column fixed="right" label="Operations" min-width="120">
-         <template #default>
+         <template #default="scope">
         <el-button link type="primary" size="small" @click="handleClick">
           详情
         </el-button>
-        <el-button link type="primary" size="small">删除</el-button>
+        <el-button link type="primary" size="small" @click="deleteBook(scope.row.bookid)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -84,5 +102,8 @@ axios.get('/api/book/all', {
 .example-pagination-block {
   display: flex;
   justify-content: end;
+}
+.head {
+  text-align: right;
 }
 </style>

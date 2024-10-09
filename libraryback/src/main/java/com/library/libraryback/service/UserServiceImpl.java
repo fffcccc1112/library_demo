@@ -23,8 +23,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User addUser(String username, String password, String phone) {
-        return userXmlMapper.addUser(username,password,phone);
+    public Integer addUser(User user) {
+        return userXmlMapper.addUser(user);
     }
 
     @Override

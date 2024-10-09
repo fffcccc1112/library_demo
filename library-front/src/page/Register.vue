@@ -39,10 +39,14 @@ const handelregister = async (event:any)=>{
 
       try{ 
         const respone =await axios.post('/api/user/register',form)
-        console.log(respone.data)
+        if(respone.data.code==0){
+          alert("注册成功!");
+          router.push('/login')
+        }
 
       }catch(error){
-          alert("注册失败!")
+        console.log(error);
+          // alert("注册失败!")
       }
 }
 function back(){

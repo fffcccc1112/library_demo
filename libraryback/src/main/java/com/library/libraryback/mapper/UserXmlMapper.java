@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface UserXmlMapper {
     List<User> getAllUser();
-    User addUser(String username,String password,String phone);
+    Integer addUser(User user);
      User getUserById(int id);
      User getUserByUsername(String username);
     User deleteUserById(int id);

@@ -35,7 +35,7 @@ public class UserController {
 
         return userXmlMapper.getAllUser();
     }
-        @GetMapping("/user/{id}")
+    @GetMapping("/user/{id}")
     public User getUserById(@PathVariable("id") int id){
             return userService.deleteUserById(id);
     }
@@ -53,32 +53,19 @@ public class UserController {
 
         return userService.getUserByPhone(phone);
     }
-    //增加用户
-    @PostMapping("/add")
-    public Result Register(String username, String password, String phone) {
-          if(userService.getUserByUsername(username)==null && userService.getUserByPhone(phone)==null){
-              String password1 = Md5Util.inputPassToFormPass(password);
-              userService.addUser(username, password1, phone);
-              System.out.println(username+password+phone);
-              return Result.success("注册成功");
-          }
-          else {
-              System.out.println(username+password+phone);
-              return Result.error("用户名或电话重复");
-
-          }
-}
-@PostMapping("/register")
-public Result register(@RequestBody User user) {
-        if(userService.getUserByUsername(user.getUsername())==null && userService.getUserByPhone(user.getPhone())==null){
-           user.setPassword(Md5Util.inputPassToFormPass(user.getPassword()));
-           User user1 = userService.addUser(user.getUsername(), user.getPassword(), user.getPhone());
-           return Result.success("注册成功");
-        }
-        else {
-            return Result.error("用户名或电话重复");
-        }
-}
+ 
+    @PostMapping("/register")
+    public Result register(@RequestBody User user) {
+            if(userService.getUserByUsername(user.getUsername())==null
+                    && userService.getUserByPhone(user.getPhone())==null){
+               user.setPassword(Md5Util.inputPassToFormPass(user.getPassword()));
+               userService.addUser(user);
+               return Result.success(user);
+            }
+            else {
+                return Result.error("操作失败");
+            }
+    }
     //根据id删除用户
     @DeleteMapping("/delete/{id}")
     public Result<User> deleteUser(@PathVariable("id") int id) {

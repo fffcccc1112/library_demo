@@ -21,6 +21,7 @@ import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'; // 导入useRouter钩子
 import  {useUserStore}  from '@/stores/useUserStore';
+import { walkUpBindingElementsAndPatterns } from 'typescript';
 const userstore = useUserStore();
 const router = useRouter()
 const username = ref('')
@@ -39,6 +40,7 @@ const pass = ref('')
       if(response.data.code==0){
         pass.value=response.data.data
         userstore.set(pass.value);
+        userstore.setname(username.value);
         alert("登录成功!")
         router.push({ name: 'book'});
       }
