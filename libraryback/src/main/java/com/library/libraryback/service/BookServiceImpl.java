@@ -14,7 +14,7 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
     @Resource
     private BookMapper bookMapper;
-    public Book insertBook(Book book){
+    public Integer insertBook(Book book){
      return bookMapper.insertBook(book);
     }
 
@@ -48,7 +48,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book updateBook(Book book) {
+    public Integer updateBook(Book book) {
         return bookMapper.updateBook(book);
+    }
+
+    @Override
+    public List<Book> findtrue() {
+      return bookMapper.findtrue();
+    }
+
+    @Override
+    public List<Book> findfalse() {
+        return bookMapper.findfalse();
     }
 }

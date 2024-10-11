@@ -22,5 +22,11 @@
         exist=#{exist},borrow=#{borrow}
        where bookid=#{bookid}
     </update>
+    <select id="findtrue" resultType="book">
+        select * from book where exist=true;
+    </select>
+    <select id="findfalse" resultType="book">
+        select * from book where exist=false;
+    </select>
 
 </mapper>

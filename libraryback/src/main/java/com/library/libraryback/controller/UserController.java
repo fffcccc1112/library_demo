@@ -7,7 +7,6 @@ import com.library.libraryback.mapper.UserXmlMapper;
 import com.library.libraryback.service.UserService;
 import com.library.libraryback.util.JwtUtil;
 import com.library.libraryback.util.Md5Util;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
@@ -53,7 +52,7 @@ public class UserController {
 
         return userService.getUserByPhone(phone);
     }
- 
+
     @PostMapping("/register")
     public Result register(@RequestBody User user) {
             if(userService.getUserByUsername(user.getUsername())==null

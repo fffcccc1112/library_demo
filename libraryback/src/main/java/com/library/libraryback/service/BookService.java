@@ -6,9 +6,17 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface BookService {
-    Book insertBook(Book book);
+    Integer insertBook(Book book);
+
     ResponseEntity<Integer> deleteBook(int id);
+
     List<Book> getBooks();
+
     Book getBookById(int id);
-    Book updateBook(Book book);
+
+    Integer updateBook(Book book);
+
+    List<Book> findtrue();
+
+    List<Book> findfalse();
 }
