@@ -5,7 +5,9 @@ import { useRouter } from 'vue-router'; // 导入useRouter钩子
 import { useUserStore } from "@/stores/useUserStore";
 import { backtopEmits } from "element-plus";
 import { ElDrawer, ElMessageBox } from 'element-plus'
-import { error } from "console";
+import { reduceEachLeadingCommentRange } from "typescript";
+import { tr } from "element-plus/es/locales.mjs";
+import { isVisible } from "element-plus/es/utils/index.mjs";
 const router = useRouter();
 const userstore = useUserStore();
 const chose = ref('all')
@@ -238,6 +240,16 @@ const cancelForm = () => {
   dialog.value = false
   clearTimeout(timer)
 }
+// 详情的效果
+const drawer = ref(false)
+const currentBook: any = ref([])
+function showDetails(this: any, scope:object){
+  this.currentBook = scope;
+  console.log(currentBook)
+  drawer.value=true
+
+}
+
 </script> 
 <template>
   <div class="head"><span>你好！{{userstore.user }}</span></div>
@@ -273,14 +285,14 @@ const cancelForm = () => {
     <el-table-column prop="exist" label="是否存在" width="120" />
     <el-table-column fixed="right" label="Operations" min-width="120">
          <template #default="scope">
-        <el-button link type="primary" size="small" @click="handleClick">
+        <el-button link type="primary" size="small"  @click="showDetails(scope.row)">
           详情
         </el-button>
         <el-button link type="primary" size="small" @click="deleteBook(scope.row.bookid)">
           删除
         </el-button>
         <el-button link type="primary" size="small" 
-         @click="borrowbook(scope.row.username,scope.row.bookid)">
+         @click="borrowbook(userstore.user,scope.row.bookid)">
          借阅
         </el-button>
         <el-button link type="primary" size="small" @click="backbook(scope.row.bookid)">
@@ -288,8 +300,22 @@ const cancelForm = () => {
         </el-button>
       </template>
     </el-table-column>
+    <!-- 实现分页效果 -->
   </el-table>
     <!-- 详情弹窗 -->
+    <el-drawer v-model="drawer" title="这里是图书详情页面" size="50%">
+          <div v-if="currentBook">
+        <ul>
+          <li><span>编号:</span>{{ currentBook.bookid}}</li>
+          <li><span>书名:</span>{{ currentBook.title }}</li>
+          <li><span>作者:</span>{{ currentBook.author }}</li>
+          <li><span>类型:</span>{{ currentBook.cover }}</li>
+          <li><span>是否存在:</span>{{currentBook.exist}}</li>
+          <li><span>借阅时间:</span>{{currentBook.outtime}}</li>
+          <li><span>读者:</span>{{currentBook.borrow}}</li>
+        </ul>
+      </div>
+      </el-drawer>
   <el-button text @click="dialog = true"
     >新增图书</el-button
   >
@@ -322,11 +348,6 @@ const cancelForm = () => {
       </div>
     </div>
   </el-drawer>
-  <!-- 分页条 -->
-  <div class="example-pagination-block">
-    <el-pagination layout="prev, pager, next" :total="50" />
-  </div>
-  
 </template>
 
 <style scoped>
