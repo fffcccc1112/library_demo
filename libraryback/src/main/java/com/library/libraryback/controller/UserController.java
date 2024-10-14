@@ -2,11 +2,13 @@ package com.library.libraryback.controller;
 
 import com.library.libraryback.entity.LoginUser;
 import com.library.libraryback.entity.Result;
+import com.library.libraryback.entity.Token;
 import com.library.libraryback.entity.User;
 import com.library.libraryback.service.UserService;
 import com.library.libraryback.util.GetExpiredTime;
 import com.library.libraryback.util.JwtUtil;
 import com.library.libraryback.util.Md5Util;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
@@ -20,7 +22,6 @@ import java.time.temporal.TemporalAmount;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-@CrossOrigin
 @RequestMapping("/user")
 @RestController
 @Validated
@@ -94,10 +95,12 @@ public class UserController {
                 Map<String,Object> claims=new HashMap<>();
                 claims.put("username",user1.getUsername());
                 claims.put("id",user1.getUserid());
-                String token = JwtUtil.getToken(claims);
+                Token token=new Token();
+                token.setToken(JwtUtil.getToken(claims));
+                token.setExpiredTime();
                 // TODO: return a expired time
-                GetExpiredTime getExpiredTime= new GetExpiredTime();
-                return Result.success(token,getExpiredTime.getExpiredtime());
+                //将令牌和过期时间存在session里面
+                return Result.success(token);
             }
             else {
                 return Result.error("密码错误");
@@ -109,23 +112,28 @@ public class UserController {
     }
     /**
     *防止过期，重新刷新一下token返回
+     * 直接从响应头拿token
      */
     @PostMapping("/refresh")
-    public Result refreshToken(LocalDateTime repiredTime,String token) {
-        //获取当前时间
-        LocalDateTime now = LocalDateTime.now();
-        // 快到期前三十分钟
-        TemporalAmount thirtyMinutes = java.time.Duration.ofMinutes(30);
-        long timeToExpirationInMinutes = ChronoUnit.MINUTES.between(now, repiredTime);
-        // 检查是否快到期（即当前时间与过期时间的差小于或等于30分钟）
-        if (timeToExpirationInMinutes <= ((Duration) thirtyMinutes).toMinutes()) {
-            // TODO: 返回新令牌
-           String newToken = JwtUtil.freshToken(token);
-            GetExpiredTime getExpiredTime= new GetExpiredTime();
-            return Result.success(newToken,getExpiredTime.getExpiredtime());
-        } else {
-            // 如果令牌还没有快到期，可以选择不刷新或抛出异常
-            throw new IllegalStateException("还未到期");
-        }
+    public Result refreshToken(@RequestHeader("Authorization") String token) {
+        Token newToken=new Token();
+        //需要将获取的请求头的Bearer 去掉
+        token = token.substring(7);
+        newToken.setToken(JwtUtil.freshToken(token));
+        newToken.setExpiredTime();
+        return Result.success(newToken);
+    }
+
+    /**
+     * 查看拦截器里 request.setAttribute的效果
+     * @param request
+     * @return
+     */
+    @GetMapping("/example")
+    public String example(HttpServletRequest request) {
+        Object userid = request.getAttribute("userid");
+        String username = (String) request.getAttribute("username");
+        // 使用 userid 和 username 做一些操作
+        return "User ID: " + userid + ", Username: " + username;
     }
 }

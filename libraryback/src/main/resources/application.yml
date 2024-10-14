@@ -9,4 +9,9 @@ spring:
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
   type-aliases-package: com.library.libraryback.entity
+
+
 # config-location: 指定核心配置文件
+#本地存储
+#file:
+#  storage-location: D:/pic
