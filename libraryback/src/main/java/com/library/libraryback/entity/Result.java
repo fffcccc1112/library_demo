@@ -1,8 +1,23 @@
 package com.library.libraryback.entity;
+
+import com.library.libraryback.util.GetExpiredTime;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
 public class Result<T> {
     private Integer code;
     private String message;
     private T data;
+    private LocalDateTime date;
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
 
     public Integer getCode() {
         return code;
@@ -41,6 +56,14 @@ public class Result<T> {
        result.setCode(1);
        result.setMessage(message);
        return result;
+    }
+    public static <E> Result<E> success(E data, LocalDateTime date) {
+        Result<E> result = new Result<E>();
+        result.setCode(0);
+        result.setMessage("操作成功");
+        result.setData(data);
+        result.setDate(date);
+        return result;
     }
 
 }

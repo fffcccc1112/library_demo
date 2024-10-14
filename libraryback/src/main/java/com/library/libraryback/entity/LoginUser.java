@@ -1,6 +1,6 @@
 package com.library.libraryback.entity;
 
-public class LogUser {
+public class LoginUser {
     private String username;
     private String password;
 

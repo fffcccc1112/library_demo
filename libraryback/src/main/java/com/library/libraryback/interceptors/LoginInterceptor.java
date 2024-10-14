@@ -20,6 +20,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 
             try {
                 Map<String, Object> claims = JwtUtil.parseToken(token);
+                // TODO: 存疑?
+                request.setAttribute("userid", claims.get("userid"));
+                request.setAttribute("username", claims.get("username"));
+                request.setAttribute("username", claims.get("username"));
                 return true;
 
             } catch (Exception e) {

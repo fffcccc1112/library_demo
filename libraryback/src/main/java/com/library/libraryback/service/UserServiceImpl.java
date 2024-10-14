@@ -5,6 +5,8 @@ import com.library.libraryback.mapper.UserXmlMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService{
 
@@ -25,6 +27,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public Integer addUser(User user) {
         return userXmlMapper.addUser(user);
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userXmlMapper.getAllUser();
     }
 
     @Override

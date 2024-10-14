@@ -18,7 +18,6 @@ public class Webconfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/user/login",
                         "/user/add",
-                        "/user/all",
                         "/user/register",
                         "/error"
                         );
