@@ -97,13 +97,12 @@ public class BookController {
         /**
          * 根据借阅情况查询图书
          */
-        @GetMapping("/findstatus/falg")
-        public Result findStatusFalg(@PathVariable("falg") boolean falg) {
-            if(falg==true){
+        @GetMapping("/findtrue")
+        public Result findStatusFalg() {
                 return Result.success( bookService.findtrue());
-            }
-            else {
+        }
+        @GetMapping("/findfalse")
+        public Result findStatusFalg2() {
                 return Result.success( bookService.findfalse());
-            }
         }
 }

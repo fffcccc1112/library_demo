@@ -23,7 +23,8 @@
                   .withClaim("claims", claims)
                   .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                   .sign(Algorithm.HMAC256(KEY));
-          return "Bearer " + token;
+//          return "Bearer " + token;
+          return token;
       }
       /**
        * 接受token，验证token，并返回业务数据
