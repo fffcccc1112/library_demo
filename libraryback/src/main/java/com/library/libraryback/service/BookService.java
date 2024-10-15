@@ -21,4 +21,6 @@ public interface BookService {
     List<Book> findfalse();
 
     String findUrl(int id);
+
+    void setBookCover(String cover, int bookid);
 }

@@ -17,8 +17,7 @@
     <update id="updateBook">
        update book
         set
-        title=#{title},author=#{author},
-        cover=#{cover},outtime=#{outtime},
+        title=#{title},author=#{author},outtime=#{outtime},
         exist=#{exist},borrow=#{borrow}
        where bookid=#{bookid}
     </update>
@@ -31,5 +30,11 @@
     <select id="findUrl" resultType="book" >
         select * from book where bookid = #{id}
     </select>
+    <update id="setBookCover">
+        update book
+        set
+            cover=#{cover}
+        where bookid=#{bookid}
+    </update>
 
 </mapper>

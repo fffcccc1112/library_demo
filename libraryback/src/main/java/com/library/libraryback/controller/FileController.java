@@ -34,7 +34,7 @@ public class FileController {
      * 参考博客https://blog.csdn.net/weixin_43760328/article/details/107559999
      */
     @RequestMapping("/fileUplode")
-    public Result fileUplode(MultipartFile file) {
+    public Result fileUplode(MultipartFile file,int bookid) {
         // 检查文件是否为空
         if (file.isEmpty()) {
             return Result.error("上传的文件为空");
@@ -58,6 +58,8 @@ public class FileController {
             Path filePath = Paths.get(uploadDir + uniqueFileName);
             // 将上传的文件保存到服务器
             file.transferTo(filePath.toFile());
+            //在数据库设置
+            bookService.setBookCover(uniqueFileName,bookid);
 
             return Result.success(uniqueFileName);
         } catch (IOException e) {

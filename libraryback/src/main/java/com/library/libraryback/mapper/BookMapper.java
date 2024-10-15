@@ -17,4 +17,5 @@ public interface BookMapper {
     List<Book>findtrue();
     List<Book> findfalse();
     Book findUrl(int id);
+    void setBookCover(String cover, int id);
 }

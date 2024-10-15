@@ -66,4 +66,9 @@ public class BookServiceImpl implements BookService {
     public String findUrl(int id) {
        return bookMapper.findUrl(id).getCover();
     }
+
+    @Override
+    public void setBookCover(String cover, int bookid) {
+        bookMapper.setBookCover(cover,bookid);
+    }
 }
