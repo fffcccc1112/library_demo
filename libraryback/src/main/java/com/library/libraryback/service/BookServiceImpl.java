@@ -61,4 +61,9 @@ public class BookServiceImpl implements BookService {
     public List<Book> findfalse() {
         return bookMapper.findfalse();
     }
+
+    @Override
+    public String findUrl(int id) {
+       return bookMapper.findUrl(id).getCover();
+    }
 }

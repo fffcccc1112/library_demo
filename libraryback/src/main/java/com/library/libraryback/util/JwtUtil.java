@@ -13,7 +13,8 @@
   @Service
   public class JwtUtil {
       private static final String KEY = "fang";
-      /*接受业务数据并生成token并返回
+      /**
+       * 接受业务数据并生成token并返回
        *过期时间为一个小时
        */
 
@@ -24,7 +25,8 @@
                   .sign(Algorithm.HMAC256(KEY));
           return "Bearer " + token;
       }
-      /*接受token，验证token，并返回业务数据
+      /**
+       * 接受token，验证token，并返回业务数据
        */
 
       public static Map<String, Object> parseToken(String token) {

@@ -16,4 +16,5 @@ public interface BookMapper {
     Integer updateBook(Book book);
     List<Book>findtrue();
     List<Book> findfalse();
+    Book findUrl(int id);
 }

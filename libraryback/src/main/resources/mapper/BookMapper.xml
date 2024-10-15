@@ -28,5 +28,8 @@
     <select id="findfalse" resultType="book">
         select * from book where exist=false;
     </select>
+    <select id="findUrl" resultType="book" >
+        select * from book where bookid = #{id}
+    </select>
 
 </mapper>

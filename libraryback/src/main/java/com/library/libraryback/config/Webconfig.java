@@ -19,7 +19,8 @@ public class Webconfig implements WebMvcConfigurer {
                         "/user/login",
                         "/user/add",
                         "/user/register",
-                        "/error"
+                        "/error",
+                        "/localimage/**"
                         );
     }
 }

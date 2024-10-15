@@ -19,4 +19,6 @@ public interface BookService {
     List<Book> findtrue();
 
     List<Book> findfalse();
+
+    String findUrl(int id);
 }

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
-@CrossOrigin
 @RequestMapping("/book")
 @RestController
 
@@ -100,6 +99,11 @@ public class BookController {
          */
         @GetMapping("/findstatus/falg")
         public Result findStatusFalg(@PathVariable("falg") boolean falg) {
-            return null;
+            if(falg==true){
+                return Result.success( bookService.findtrue());
+            }
+            else {
+                return Result.success( bookService.findfalse());
+            }
         }
 }
