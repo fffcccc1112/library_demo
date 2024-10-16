@@ -81,7 +81,7 @@ public class BookController {
          * 还书
          */
         @GetMapping("/return/{bookid}")
-        public Result returnBook(@PathVariable("bookid") int bookid, @RequestAttribute("userid") int userid) {
+        public Result returnBook(@PathVariable int bookid) {
             Book book = bookService.getBookById(bookid);
             if(book.isExist()){
                return Result.error("该书未被借阅");

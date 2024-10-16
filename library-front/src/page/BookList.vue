@@ -2,16 +2,20 @@
 import axios from "axios";
 import { ref,reactive } from "vue";
 import { useRouter } from 'vue-router'; // 导入useRouter钩子
-import { useUserStore } from "@/stores/useUserStore";
-import { backtopEmits } from "element-plus";
+import { backtopEmits, componentSizeMap } from "element-plus";
 import { ElDrawer, ElMessageBox } from 'element-plus'
 import { reduceEachLeadingCommentRange } from "typescript";
-import { tr } from "element-plus/es/locales.mjs";
-import { isVisible } from "element-plus/es/utils/index.mjs";
+import service from "@/utils/request";
+import Cookies from "js-cookie";
 const router = useRouter();
-const userstore = useUserStore();
 const chose = ref('all')
-
+const username =ref()
+username.value = Cookies.get('username')
+const timestampStr = Cookies.get('expiredTime');
+let expired: number = timestampStr? parseInt(timestampStr, 10) : 0;
+const date = new Date(expired);
+const currentTimes =Date.now();
+//显示时间
 // 定义书籍类型
 type book = {
   bookid: number;
@@ -24,7 +28,7 @@ type book = {
 };
 
 // 创建书籍数据的响应式引用
-const tableData = ref<book[]>([
+const tableData = ref<book[]>([ 
   {
     bookid: 0,
     bookname: "",
@@ -35,20 +39,10 @@ const tableData = ref<book[]>([
     outtime: new Date()
   }
 ]);
-//实现详细信息弹窗
-
-const handleClick = () => {
-  console.log('click');
-};
 //实现根据id搜索的功能
 const searchText = ref('')
 const findbook = () => {
-  axios.get(`/api/book/find/${searchText.value}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': userstore.token 
-    }
-  })
+  service.get(`http://localhost:5174/api/book/find/${searchText.value}`)
   .then(response => {
     if (response.status==200) { // 检查响应是否成功
       tableData.value = [];
@@ -64,31 +58,8 @@ const findbook = () => {
     console.error('Error fetching data:', error.message); 
   });
 }
-// 发送 GET 请求获取书籍数据
- axios.get('/api/book/all', {
-   headers: {
-     'Content-Type': 'application/json',
-     'Authorization':userstore.token
-   }
- })
- .then(response => {
-   // 更新表格数据
-   tableData.value = response.data;
-   // console.log(response.data)
-
- })
- .catch(error => {
-   // 打印错误信息
-   console.error('Error:', error);
-   alert("登录已过期，请重新登陆")
-   router.push('/login')
- });
 const deleteBook = (bookId: number) => {
-  axios.delete(`/api/book/delete/${bookId}`, {
-    headers: {
-      'Authorization': userstore.token
-    }
-  })
+  service.delete(`http://localhost:5174/api/book/delete/${bookId}`)
   .then(() => {
     // 删除成功后，从tableData中移除该书籍
     tableData.value = tableData.value.filter(book => book.bookid !== bookId);
@@ -101,58 +72,59 @@ const deleteBook = (bookId: number) => {
 };
 const search = (sty: string) => {
   if (chose.value === "all") {
-    axios.get('/api/book/all', {
-      headers: {
-        'Authorization': userstore.token
-      }
-    })
-    .then(response => {
-      if (response.status === 200) {
-        tableData.value = response.data
-      } else {
-        console.error('Failed to fetch data:', response.status);
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching all books:', error);
-      alert("请求失败，请重试");
-    });
-  } else if (chose.value === 'false') {
-    axios.get('/api/book/find/false', {
-      headers: {
-        'Authorization': userstore.token
-      }
-    })
-    .then(response => {
-      if (response.status === 200) {
-        tableData.value = response.data
-      } else {
-        console.error('Failed to fetch false books:', response.status);
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching false books:', error);
-      alert("请求失败，请重试");
-    });
-  } else if (chose.value === 'true') {
-    axios.get('/api/book/find/true', {
-      headers: {
-        'Authorization': userstore.token
-      }
-    })
-    .then(response => {
-      if (response.status === 200) {
-        tableData.value = response.data
-      } else {
-        console.error('Failed to fetch true books:', response.status);
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching true books:', error);
-      alert("请求失败，请重试");
-    });
+     service.get('http://localhost:5174/api/book/all')
+     .then(response=>{
+      // console.log(response)
+      //怎么样将reaponce赋值给tabledata
+      tableData.value=response.data
+     })
+     .catch(error=>{
+      console.log("Error:", error);
+    // 如果是网络错误等，可以更详细地打印错误信息
+    if (error.response) {
+        console.log(`Server responded with an error: ${error.response.status}`);
+    } else if (error.request) {
+        console.log('No response received from the server.');
+    } else {
+        console.log(`Error setting up the request: ${error.message}`);
+    }
+     })
   }
-};
+  else if(chose.value === "false"){
+    service.get('http://localhost:5174/api/book/findfalse')
+    .then(response=>{
+      tableData.value=response.data.data
+    })
+    .catch(error=>{
+      console.log("Error:", error);
+    // 如果是网络错误等，可以更详细地打印错误信息
+    if (error.response) {
+        console.log(`Server responded with an error: ${error.response.status}`);
+    } else if (error.request) {
+        console.log('No response received from the server.');
+    } else {
+        console.log(`Error setting up the request: ${error.message}`);
+    }
+     })
+  }
+  else if(chose.value === "true"){
+    service.get('http://localhost:5174/api/book/findtrue')
+    .then(response=>{
+      tableData.value=response.data.data
+    })
+    .catch(error=>{
+      console.log("Error:", error);
+    // 如果是网络错误等，可以更详细地打印错误信息
+    if (error.response) {
+        console.log(`Server responded with an error: ${error.response.status}`);
+    } else if (error.request) {
+        console.log('No response received from the server.');
+    } else {
+        console.log(`Error setting up the request: ${error.message}`);
+    }
+     })
+  }
+}
 const options = [
   {
     chose: 'false',
@@ -173,11 +145,7 @@ const borrowbook = (username: string,bookid: number)=>{
     bookid: bookid
   })
       //实现借阅的接口
-      axios.post('/api/book/borrow',bookborrow.value,{
-        headers: {
-        'Authorization': userstore.token
-      }
-      })
+      service.post('http://localhost:5174/api/book/borrow',bookborrow.value)
       .then(response => {
         console.log(response.data)
         alert(response.data.message)
@@ -188,21 +156,11 @@ const borrowbook = (username: string,bookid: number)=>{
       console.error('Error borrowing book', error);
     });
 }
-const backbook = (bookid: number)=>{
-  axios.get(`/api/book/return/${bookid}`,
-    {
-      headers: {
-        'Authorization': userstore.token
-      }
-    })
-    .then(response => {
-    // 处理成功的响应
-     alert(response.data.message)
-    })
-    .catch(error=>{
-      alert("还书失败")
-    })
-
+const backbook =  (bookid: number) => {
+  service.get(`http://localhost:5174/api/book/return/${bookid}`)
+  .then(response=>{
+    alert(response.data.message)
+  })
 }
 //设置弹窗
 const formLabelWidth = '80px'
@@ -218,13 +176,9 @@ const form = reactive({
 
 
 const onClick = () => {
-  axios.post('/api/book/add',form,{
-    headers: {
-        'Authorization': userstore.token
-      }
-  })
+  service.post("http://localhost:5174/api/book/add",form)
   .then(response=>{
-    alert(response.data.message)
+      alert(response.data.message)
   })
   .catch(error=>{
     alert("添加失败")
@@ -249,10 +203,23 @@ function showDetails(this: any, scope:object){
   drawer.value=true
 
 }
-
+// 实现分页的效果
+const currentPage = ref(1);
+const pageSize = ref(5);
+function handleSizeChange(val:number){
+  pageSize.value = val;
+}
+function handleCurrentChange(val:number){
+    currentPage.value = val
+}
 </script> 
 <template>
-  <div class="head"><span>你好！{{userstore.user }}</span></div>
+  <div class="head">
+    <span>你好！{{ username }}</span><br>
+    <span>请注意登录过期时间{{ date }}</span><br>
+    当前时间
+    <span id="timeDisplay"></span>
+  </div>
        <!-- 搜索框 -->
        <el-input
       type="text"
@@ -277,7 +244,8 @@ function showDetails(this: any, scope:object){
 
   </div>
   <!-- 表格 -->
-  <el-table :data="tableData" style="width: 100%" class="list">
+  <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+   style="width: 100%" class="list">
     <el-table-column fixed prop="bookid" label="图书编号" width="150" />
     <el-table-column prop="bookname" label="书名" width="120" />
     <el-table-column prop="author" label="作者" width="120" />
@@ -288,11 +256,14 @@ function showDetails(this: any, scope:object){
         <el-button link type="primary" size="small"  @click="showDetails(scope.row)">
           详情
         </el-button>
-        <el-button link type="primary" size="small" @click="deleteBook(scope.row.bookid)">
-          删除
-        </el-button>
+            <el-button link type="primary"
+              size="small"
+              @click="deleteBook(scope.row.bookid)">
+                删除
+       </el-button>
+  
         <el-button link type="primary" size="small" 
-         @click="borrowbook(userstore.user,scope.row.bookid)">
+         @click="borrowbook(username,scope.row.bookid)">
          借阅
         </el-button>
         <el-button link type="primary" size="small" @click="backbook(scope.row.bookid)">
@@ -300,22 +271,37 @@ function showDetails(this: any, scope:object){
         </el-button>
       </template>
     </el-table-column>
-    <!-- 实现分页效果 -->
   </el-table>
+    <!-- 实现分页效果 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="[5, 10, 20, 40]"
+      :page-size="pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="tableData.length">
+  </el-pagination>
     <!-- 详情弹窗 -->
-    <el-drawer v-model="drawer" title="这里是图书详情页面" size="50%">
-          <div v-if="currentBook">
+    <el-drawer v-model="drawer" 
+      title="这里是图书详情页面" 
+      size="50%"
+    >
+      <div v-if="currentBook">
         <ul>
           <li><span>编号:</span>{{ currentBook.bookid}}</li>
           <li><span>书名:</span>{{ currentBook.title }}</li>
           <li><span>作者:</span>{{ currentBook.author }}</li>
-          <li><span>类型:</span>{{ currentBook.cover }}</li>
           <li><span>是否存在:</span>{{currentBook.exist}}</li>
           <li><span>借阅时间:</span>{{currentBook.outtime}}</li>
           <li><span>读者:</span>{{currentBook.borrow}}</li>
+          <li>
+            <h3>封面</h3>
+            <img :src="`http://localhost:8088/localimage/${currentBook.cover}`">
+          </li>
         </ul>
       </div>
-      </el-drawer>
+    </el-drawer>
   <el-button text @click="dialog = true"
     >新增图书</el-button
   >
@@ -364,4 +350,5 @@ function showDetails(this: any, scope:object){
 .but {
   margin-bottom: 5px;
 }
+
 </style>

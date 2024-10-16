@@ -21,8 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
-import {  ref } from 'vue';
+// import axios from 'axios';
+const currentInstance: any = getCurrentInstance();
+const { $axios } = currentInstance.appContext.config.globalProperties;
+import {  getCurrentInstance, ref } from 'vue';
 import { useRouter } from 'vue-router'; // 导入useRouter钩子
 const username = ref('')
 const password = ref('')
@@ -38,7 +40,7 @@ const handelregister = async (event:any)=>{
     };
 
       try{ 
-        const respone =await axios.post('/api/user/register',form)
+        const respone =await $axios.post('/api/user/register',form)
         if(respone.data.code==0){
           alert("注册成功!");
           router.push('/login')

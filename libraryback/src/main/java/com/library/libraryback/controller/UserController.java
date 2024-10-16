@@ -113,17 +113,23 @@ public class UserController {
     }
     /**
     *防止过期，重新刷新一下token返回
-     * 直接从响应头拿token
+     * 直接从响应头拿token@RequestHeader("Authorization")
      */
     @PostMapping("/refresh")
     public Result refreshToken(@RequestHeader("Authorization") String token) {
-        Token newToken=new Token();
-        //需要将获取的请求头的Bearer 去掉
-        token = token.substring(7);
-        newToken.setToken(JwtUtil.freshToken(token));
-        newToken.setExpiredTime();
-        return Result.success(newToken);
+        // 处理令牌的逻辑
+        if (token!= null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            Token newToken = new Token();
+            newToken.setToken(JwtUtil.freshToken(token));
+            newToken.setExpiredTime();
+            return Result.success(newToken);
+        }
+        return Result.error("无效的令牌");
     }
+
+
+
 
     /**
      * 查看拦截器里 request.setAttribute的效果
@@ -137,4 +143,6 @@ public class UserController {
         // 使用 userid 和 username 做一些操作
         return "User ID: " + userid + ", Username: " + username;
     }
+
+
 }

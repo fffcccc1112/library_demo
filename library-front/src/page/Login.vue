@@ -20,9 +20,7 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'; // 导入useRouter钩子
-import  {useUserStore}  from '@/stores/useUserStore';
-import { walkUpBindingElementsAndPatterns } from 'typescript';
-const userstore = useUserStore();
+import Cookies from 'js-cookie';
 const router = useRouter()
 const username = ref('')
 const password = ref('')
@@ -31,16 +29,21 @@ const pass = ref('')
   const handleLogin = async (event:any) => {
     // 阻止表单的默认提交行为
     event.preventDefault();
-    const formData = new FormData();
-    formData.append('username', username.value);
-    formData.append('password', password.value);
+    const data = {
+      username: username.value,
+      password: password.value,
+    }
       // 这里可以添加登录逻辑，例如调用 API
     try {
-      const response = await axios.post('/api/user/login',formData)
+      const response = await axios.post('/api/user/login',data)
       if(response.data.code==0){
         pass.value=response.data.data
-        userstore.set(pass.value);
-        userstore.setname(username.value);
+        //将token加到cookie
+        console.log(response.data)
+        // 设置 Cookie
+        Cookies.set('token',response.data.data.token) 
+        Cookies.set('username',username.value)
+        Cookies.set('expiredTime',response.data.data.expiredTime)
         alert("登录成功!")
         router.push({ name: 'book'});
       }
