@@ -7,15 +7,13 @@ import { ElDrawer, ElMessageBox } from 'element-plus'
 import { reduceEachLeadingCommentRange } from "typescript";
 import service from "@/utils/request";
 import Cookies from "js-cookie";
+import addBooks from "./bookcompent/addBooks.vue";
 const router = useRouter();
 const chose = ref('all')
 const username =ref()
 username.value = Cookies.get('username')
 const timestampStr = Cookies.get('expiredTime');
 let expired: number = timestampStr? parseInt(timestampStr, 10) : 0;
-const date = new Date(expired);
-const currentTimes =Date.now();
-//显示时间
 // 定义书籍类型
 type book = {
   bookid: number;
@@ -162,38 +160,6 @@ const backbook =  (bookid: number) => {
     alert(response.data.message)
   })
 }
-//设置弹窗
-const formLabelWidth = '80px'
-let timer:any
-const dialog = ref(false)
-const loading = ref(false)
-const form = reactive({
-  bookid:'',
-  title:'',
-  author:'',
-  cover:''
-})
-
-
-const onClick = () => {
-  service.post("http://localhost:5174/api/book/add",form)
-  .then(response=>{
-      alert(response.data.message)
-  })
-  .catch(error=>{
-    alert("添加失败")
-  })
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-    dialog.value = false
-  }, 400)
-}
-const cancelForm = () => {
-  loading.value = false
-  dialog.value = false
-  clearTimeout(timer)
-}
 // 详情的效果
 const drawer = ref(false)
 const currentBook: any = ref([])
@@ -216,9 +182,7 @@ function handleCurrentChange(val:number){
 <template>
   <div class="head">
     <span>你好！{{ username }}</span><br>
-    <span>请注意登录过期时间{{ date }}</span><br>
-    当前时间
-    <span id="timeDisplay"></span>
+    <span>请注意登录过期时间{{  expired }}</span><br>
   </div>
        <!-- 搜索框 -->
        <el-input
@@ -302,38 +266,7 @@ function handleCurrentChange(val:number){
         </ul>
       </div>
     </el-drawer>
-  <el-button text @click="dialog = true"
-    >新增图书</el-button
-  >
-  <el-drawer
-    v-model="dialog"
-    title="请输入图书的基本信息"
-    direction="ltr"
-    class="demo-drawer"
-  >
-    <div class="demo-drawer__content">
-      <el-form :model="form">
-        <el-form-item label="图书编号" :label-width="formLabelWidth">
-          <el-input v-model="form.bookid" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="书名" :label-width="formLabelWidth">
-          <el-input v-model="form.title" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="作者" :label-width="formLabelWidth">
-          <el-input v-model="form.author" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="篇幅" :label-width="formLabelWidth">
-          <el-input v-model="form.cover" autocomplete="off" />
-        </el-form-item>
-      </el-form>
-      <div class="demo-drawer__footer">
-        <el-button @click="cancelForm">取消</el-button>
-        <el-button type="primary" :loading="loading" @click="onClick">
-          {{ loading ? 'Submitting ...' : '提交' }}
-        </el-button>
-      </div>
-    </div>
-  </el-drawer>
+  <addBooks/>
 </template>
 
 <style scoped>

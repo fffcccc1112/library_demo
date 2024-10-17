@@ -4,7 +4,6 @@ import { createRouter,createWebHistory } from "vue-router";
 import BookList from "@/page/BookList.vue";
 import Login from "@/page/Login.vue";
 import Register from "@/page/Register.vue";
-import AddBooks from "@/page/AddBooks.vue";
 //创建路由器
 const router = createRouter({
     history:createWebHistory(),//路由器的工作模式
@@ -17,14 +16,7 @@ const router = createRouter({
         {
             path:'/book',
             name: 'book',
-            component:BookList,
-            children:[
-                {
-                    path:"/update",
-                    name:"update",
-                    component:AddBooks
-                }
-            ]
+            component:BookList
         },
         {
             path:"/login",
